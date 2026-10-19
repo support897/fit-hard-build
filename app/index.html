@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fit Hard</title>
+<meta name="theme-color" content="#FAEED6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-menu" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3.5"/><line x1="9.5" y1="4.5" x2="9.5" y2="19.5"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-pep" viewBox="0 0 24 24"><path d="M12 3c3.5 4.2 6 7.6 6 10.5a6 6 0 1 1-12 0C6 10.6 8.5 7.2 12 3z"/><path d="M9.5 13.5a2.6 2.6 0 0 0 2.5 2.7"/></symbol>
+  <symbol id="i-meal" viewBox="0 0 24 24"><path d="M4 17.5h16"/><path d="M12 8a8 8 0 0 1 8 8H4a8 8 0 0 1 8-8z"/><path d="M12 8V6.5"/><circle cx="12" cy="5" r="1.1"/></symbol>
+  <symbol id="i-gym" viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="3.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="6.5"/><line x1="16" y1="3" x2="16" y2="6.5"/><path d="M8.5 15.5l2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20c-5.5-3.6-8.2-6.8-8.2-10.3 0-2.7 1.9-4.7 4.3-4.7 1.6 0 3.1.8 3.9 2 .8-1.2 2.3-2 3.9-2 2.4 0 4.3 2 4.3 4.7C20.2 13.2 17.5 16.4 12 20z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h1.2l1.6-2.4A1.5 1.5 0 0 1 9.5 3.8h5a1.5 1.5 0 0 1 1.2.8L17.3 7h1.2A1.5 1.5 0 0 1 20 8.5v9A1.5 1.5 0 0 1 18.5 19h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.6" r="3.4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M3.6 7.4l1.5 1.5 2.5-2.7"/><line x1="10" y1="7.4" x2="19.5" y2="7.4"/><path d="M3.6 12.7l1.5 1.5 2.5-2.7"/><line x1="10" y1="12.7" x2="19.5" y2="12.7"/><circle cx="5.4" cy="17.7" r="1.1"/><line x1="10" y1="17.7" x2="19.5" y2="17.7"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6 6l2.1 2.1M15.9 15.9L18 18M18 6l-2.1 2.1M8.1 15.9L6 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4l2.3 4.9 5.3.7-3.9 3.7 1 5.3-4.7-2.6-4.7 2.6 1-5.3L4.4 9.6l5.3-.7z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+</svg>
+
+<header id="topStrip">
+  <button id="sidebarToggle" class="stripToggle" aria-label="Hide or show the side menu" aria-pressed="true"><svg class="ic"><use href="#i-menu"/></svg></button>
+  <img class="stripLogo" src="icon.svg" alt="">
+  <span class="stripName">Fit Hard</span>
+  <span class="stripHi" id="stripHi"></span>
+</header>
+
+<div id="demoBanner" class="hidden" data-i18n="acc.demoExploring">You are exploring the demo. Everything here is made up, and your own app is untouched.</div>
+
+<div id="app">
+  <aside id="sidebar" aria-label="Main menu">
+    <nav id="mainNav">
+      <button class="navBtn active" data-view="today"><span class="navIcon icInk"><svg class="ic"><use href="#i-home"/></svg></span><span data-i18n="nav.today">Today</span></button>
+      <div id="areaGroups"></div>
+      <div class="sideLabel" id="laterLabel" hidden data-i18n="nav.later">Saved for later</div>
+      <div id="laterGroups"></div>
+    </nav>
+    <div class="sideFoot">
+      <button class="navBtn" id="guideBtn"><span class="navIcon icAmber"><svg class="ic"><use href="#i-star"/></svg></span><span data-i18n="nav.setupGuide">Setup guide</span></button>
+      <button class="navBtn" data-view="settings"><span class="navIcon icInk"><svg class="ic"><use href="#i-gear"/></svg></span><span data-i18n="nav.settings">Settings</span></button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <section id="view-today" class="view active">
+      <header class="topBar"><div>
+        <h1 id="todayTitle">Today</h1>
+        <p class="sub" id="todaySub" data-i18n="today.sub">Your day, in one calm place.</p>
+      </div></header>
+
+      <div class="card" id="checkinCard">
+        <h2><svg class="ic icInline"><use href="#i-heart"/></svg> <span data-i18n="today.feelQ">How are you feeling today?</span></h2>
+        <p class="hint" data-i18n="today.feelHint">One tap shapes your day. Bad days get a softer plan, on purpose.</p>
+        <div class="checkinRow" id="checkinRow"></div>
+        <p class="hint" id="checkinHint"></p>
+        <div id="wallySpot"></div>
+      </div>
+
+      <div class="card reofferCard" id="nameReoffer" hidden>
+        <img class="reofferFace" src="assets/wally-welcome.webp" alt="">
+        <div class="reofferBody">
+          <p class="reofferLine" id="reofferLine"></p>
+          <input id="reofferName" type="text" autocomplete="name" placeholder="Your name">
+          <div class="reofferRow">
+            <button class="primaryBtn" id="reofferSave" data-i18n="reoffer.save">Save</button>
+            <button class="reofferXBtn" id="reofferX" aria-label="Close">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="budgetCard" hidden>
+        <h2><svg class="ic icInline"><use href="#i-meal"/></svg> Food today</h2>
+        <p class="big" id="budgetLine"></p>
+        <p class="hint" id="budgetNote"></p>
+      </div>
+
+      <div class="areaCards" id="todayAreas"></div>
+
+      <div class="card emptyCard" id="todayEmpty" hidden>
+        <div id="emptyWally"></div>
+        <svg class="ic icBig"><use href="#i-star"/></svg>
+        <p data-i18n="today.emptyLine">Nothing here yet. That is a fine place to start.</p>
+        <button class="primaryBtn" id="emptySetupBtn" data-i18n="today.setupBtn">Set up my app</button>
+      </div>
+    </section>
+
+    <section id="view-area" class="view">
+      <header class="topBar"><div>
+        <h1 id="areaTitle">Area</h1>
+        <p class="sub" id="areaSub"></p>
+      </div></header>
+      <div class="card emptyCard" id="areaEmpty">
+        <svg class="ic icBig" id="areaEmptyIcon"><use href="#i-star"/></svg>
+        <p id="areaEmptyLine" data-i18n="area.empty">Nothing here yet.</p>
+        <button class="primaryBtn" id="areaEmptyBtn" data-i18n="area.start">Start</button>
+      </div>
+      <div id="areaBody"></div>
+    </section>
+
+    <section id="view-settings" class="view">
+      <header class="topBar"><div><h1 data-i18n="nav.settings">Settings</h1><p class="sub" data-i18n="set.sub">Your app, your way. Change anything, any time.</p></div></header>
+      <div class="card">
+        <h2 data-i18n="setup.about">About you</h2>
+        <div id="profileSummary" class="hint" data-i18n="set.noSetup">No setup yet.</div>
+        <div class="row"><button class="pillBtn" id="redoSetupBtn" data-i18n="set.redo">Redo my setup</button></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set.appearance">Appearance</h2>
+        <p class="hint" data-i18n="set.apprHint">Pick the room your app lives in. Words stay easy to read on every choice.</p>
+        <div class="apprRow" id="apprRow">
+          <button class="apprBtn" data-appr="brand"><span class="apprSwatch" style="background:#FAEED6"></span><span data-i18n="set.apprBoard">Calm board look</span></button>
+          <button class="apprBtn" data-appr="white"><span class="apprSwatch" style="background:#FFFFFF"></span><span data-i18n="set.apprWhite">White</span></button>
+          <button class="apprBtn" data-appr="black"><span class="apprSwatch" style="background:#17120E"></span><span data-i18n="set.apprBlack">Black</span></button>
+          <button class="apprBtn" data-appr="image"><span class="apprSwatch" style="background:#A9BFA5"></span><span data-i18n="set.apprPhoto">My photo</span></button>
+        </div>
+        <div class="row hidden" id="apprPhotoRow">
+          <button class="pillBtn" id="apprPickBtn" data-i18n="set.pickPhoto" onclick="document.getElementById('apprFile').click()">Choose a photo</button>
+          <button class="pillBtn hidden" id="apprRemoveBtn" data-i18n="set.removePhoto">Remove my photo</button>
+          <input type="file" id="apprFile" accept="image/*" class="hidden" aria-label="Add your own background photo">
+        </div>
+        <p class="hint" id="apprNote"></p>
+        <div class="row"><span class="hint" data-i18n="settings.langLabel">Language</span>
+          <button class="pillBtn" id="langAutoBtn" data-i18n="settings.langAuto">Auto</button>
+          <button class="pillBtn" id="langEnBtn">English</button>
+          <button class="pillBtn" id="langEsBtn">Español</button></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set.account">Your account</h2>
+        <div id="accountBox"><p class="hint" data-i18n="set.opening">One moment, opening your account door.</p></div>
+        <p class="hint" id="guideStatus"></p>
+        <div id="guideRestSpot"></div>
+        <div class="row"><button class="pillBtn" id="guideToggleBtn" data-i18n="set.wallyRest">Wally rests for a while</button></div>
+        <div class="row"><button class="pillBtn" id="tourReplayBtn" data-i18n="tour.replayBtn">See the tour again</button></div>
+        <label><span data-i18n="set.hisName">His name</span><input id="guideNameInput" type="text" placeholder="Wally" autocomplete="off"></label>
+        <div class="row"><button class="pillBtn" id="guideNameSave" data-i18n="set.saveName">Save his name</button></div>
+        <p class="hint" data-i18n="set.blanket">His blanket colour</p>
+        <div class="row" id="blanketRow">
+          <button class="blanketBtn" data-blanket="sage"><span class="apprSwatch" style="background:#52695A"></span><span data-i18n="set.blanketSage">Sage</span></button>
+          <button class="blanketBtn" data-blanket="mist"><span class="apprSwatch" style="background:#A9BFA5"></span><span data-i18n="set.blanketMist">Mist</span></button>
+          <button class="blanketBtn" data-blanket="tint"><span class="apprSwatch" style="background:#DCE7D8"></span><span data-i18n="set.blanketTint">Tint</span></button>
+          <button class="blanketBtn" data-blanket="taupe"><span class="apprSwatch" style="background:#AC9278"></span><span data-i18n="set.blanketTaupe">Taupe</span></button>
+        </div>
+        <p class="hint" data-i18n="set.trainer">Your trainer figure, the one who shows each move in the gym</p>
+        <div class="row" id="skinRow">
+          <button class="skinBtn" data-skin="girl" data-i18n="set.skinGirl">Girl</button>
+          <button class="skinBtn" data-skin="boy" data-i18n="set.skinBoy">Boy</button>
+          <button class="skinBtn" data-skin="nb" data-i18n="set.skinNb">Non-binary</button>
+        </div>
+        <p class="hint" data-i18n="set.motion">Moving pictures in the gym</p>
+        <div class="row"><button class="pillBtn" id="calmPicsBtn" data-i18n="set.stills">Still frames instead</button></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set.reminders">Reminders</h2>
+        <p class="hint" id="remindHint"></p>
+        <div class="row"><button class="pillBtn hidden" id="remindBtn"></button></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set.healthNote">Health tracking note</h2>
+        <p class="hint" id="disclaimerStatus" data-i18n="set.noPep">You have not opened the peptide area yet.</p>
+      </div>
+      <div class="card">
+        <h2 data-i18n="set.data">Your data</h2>
+        <div class="row"><button class="pillBtn" id="exportBtn" data-i18n="set.download">Download my data</button></div>
+        <div class="row"><button class="pillBtn" id="importOpen2" data-i18n="cal.importTitle">Bring my calendar in</button></div>
+        <p class="hint" data-i18n="set.dataHint">Everything you add stays yours. The app never deletes it.</p>
+        <p class="hint" id="saveNote"></p>
+        <div class="row"><a href="privacy.html" target="_blank" rel="noopener" data-i18n="set.privacy">Privacy policy</a></div>
+      </div>
+    </section>
+
+    <section id="view-plans" class="view">
+      <header class="topBar"><div><h1 data-i18n="plan.title">Plans</h1><p class="sub" data-i18n="plan.sub">Pick the shelf that fits. You can change or cancel any time.</p></div></header>
+      <div id="plansBox"></div>
+    </section>
+  </main>
+</div>
+
+<button id="sbShield" aria-label="Close the side menu"></button>
+
+<div id="setupModal" class="modal hidden">
+  <div class="modalCard">
+    <div id="wallySetup"></div>
+    <h2 id="setupTitle" data-i18n="setup.title">Welcome. Let us set up your app.</h2>
+    <p class="hint" data-i18n="setup.intro">Answer what you can. Skip anything you like. You can change it all later in Settings.</p>
+    <h3 data-i18n="setup.about">About you</h3>
+    <div class="grid2">
+      <label><span data-i18n="setup.name">Your name</span><input id="suName" type="text" placeholder="First name" data-i18n-ph="setup.namePh" autocomplete="off"></label>
+      <label><span data-i18n="setup.goal">Goal</span><select id="suGoal"></select></label>
+      <label><span data-i18n="setup.weight">What you weigh, in kg</span><input id="suWeight" type="number" min="1" step="any" placeholder="82"></label>
+      <label><span data-i18n="setup.height">How tall you are, in cm</span><input id="suHeight" type="number" min="1" step="any" placeholder="168"></label>
+    </div>
+    <p class="hint" data-i18n="setup.ageHint">For a calorie estimate, the usual formula also uses age. Optional, and it stays on your device.</p>
+    <div class="grid2">
+      <label><span data-i18n="setup.age">Age (optional)</span><input id="suAge" type="number" min="1" max="120" placeholder="34"></label>
+      <label><span data-i18n="setup.formula">Formula (optional)</span><select id="suSex"><option value="" data-i18n="setup.skipOpt">Skip</option><option value="female" data-i18n="setup.female">Female</option><option value="male" data-i18n="setup.male">Male</option></select></label>
+      <label><span data-i18n="setup.week">A normal week is</span><select id="suActivity"><option value="low" data-i18n="setup.actLow">Mostly sitting</option><option value="some" selected data-i18n="setup.actSome">Up and about</option><option value="lots" data-i18n="setup.actLots">Very active</option></select></label>
+      <label><span data-i18n="setup.pace">Pace</span><select id="suDeficit"><option value="gentle" selected data-i18n="setup.paceGentle">Gentle</option><option value="steady" data-i18n="setup.paceSteady">Steady</option><option value="none" data-i18n="setup.paceNone">Just track, no target</option></select></label>
+    </div>
+    <h3 data-i18n="setup.guideH">Your guide</h3>
+    <label><span data-i18n="setup.companion">Give your companion a name, if you like</span><input id="suCompanion" type="text" placeholder="Wally" autocomplete="off"></label>
+    <p class="hint" data-i18n="setup.guideHint">He walks with you, never judges, and thinks rest days are good days.</p>
+    <h3 data-i18n="setup.foodH">Food you like</h3>
+    <div id="suCuisines" class="chipRow"></div>
+    <label><span data-i18n="setup.allergies">Allergies or foods to avoid, split with commas</span><input id="suAllergies" type="text" placeholder="peanut, shellfish" data-i18n-ph="setup.allergiesPh"></label>
+    <h3 data-i18n="setup.needH">What do you need?</h3>
+    <p class="hint" data-i18n="setup.needHint">Pick what helps. Anything you skip waits quietly in the side menu, under Saved for later.</p>
+    <div id="suNeeds" class="chipRow"></div>
+    <div class="row"><button id="suDone" class="primaryBtn" data-i18n="setup.done">Start my app</button><button id="suSkip" class="pillBtn" data-i18n="setup.notNow">Not now</button></div>
+  </div>
+</div>
+
+<div id="tourRoot" class="hidden">
+  <div id="tourDim" class="tourDim hidden"></div>
+  <div id="tourCard"></div>
+</div>
+
+<div id="proModal" class="modal hidden">
+  <div class="modalCard">
+    <div id="proWally"></div>
+    <h2>Fit Hard Pro</h2>
+    <p data-i18n="pro.body">Unlimited routines and training plans. Your progress from day one, not just the last three months. Your own custom exercises, and body measurements over time. The plate calculator does the maths for you.</p>
+    <p class="hint" data-i18n="pro.price">A$7.99 a month, or A$59.99 a year. Your first month is free.</p>
+    <p class="hint" id="proLocalLine" hidden></p>
+    <p class="hint" id="proStateLine"></p>
+    <div class="row"><button id="proGo" class="primaryBtn" data-i18n="pro.goBtn">See Pro plans</button><button id="proNotNow" class="pillBtn" data-i18n="setup.notNow">Not now</button></div>
+  </div>
+</div>
+
+<div id="recipeModal" class="modal hidden"><div class="modalCard" id="recipeModalCard"></div></div>
+
+<div id="importSheet" class="modal hidden">
+  <div class="modalCard">
+    <h2 data-i18n="cal.importTitle">Bring my calendar in</h2>
+    <p class="hint" data-i18n="cal.importIntro">Read-only. This copies your events into Fit Hard. Nothing in your old calendar changes, and importing again never doubles anything.</p>
+    <div class="row" role="group" aria-label="Where is your calendar?">
+      <button class="pillBtn import-src" data-src="google" data-i18n="cal.srcGoogle">Google Calendar</button>
+      <button class="pillBtn import-src" data-src="apple" data-i18n="cal.srcApple">Apple / iCloud</button>
+      <button class="pillBtn import-src" data-src="outlook" data-i18n="cal.srcOutlook">Outlook</button>
+      <button class="pillBtn import-src" data-src="file" data-i18n="cal.srcFile">A calendar file</button>
+    </div>
+    <p class="hint" id="importGuide"></p>
+    <label><span data-i18n="cal.importLinkLabel">Paste the calendar link</span><input type="url" id="importUrl" placeholder="https://… .ics" autocomplete="off"></label>
+    <div class="row"><button id="importGo" class="primaryBtn" data-i18n="cal.importGo">Bring it in</button><button id="importFileBtn" class="pillBtn" data-i18n="cal.importFileBtn">Choose a file instead</button><input type="file" id="importFile" accept=".ics,text/calendar" hidden aria-label="Choose a calendar file"></div>
+    <p class="hint" id="importResult" role="status"></p>
+    <div class="row"><button id="importClose" class="pillBtn" data-i18n="cal.importDone">Done</button></div>
+  </div>
+</div>
+
+<div id="wallyFloat" class="hidden"></div>
+<div id="toast" class="toast hidden"></div>
+<script src="data.js"></script>
+<script src="logic.js"></script>
+<script src="meals-data.js"></script>
+<script src="meals-nutrition.js"></script>
+<script src="meals-logic.js"></script>
+<script src="exercises-data.js"></script>
+<script src="anim-data.js"></script>
+<script src="anim.js"></script>
+<script src="wally.js"></script>
+<script src="i18n.js"></script>
+<script src="i18n-content.js"></script>
+<script src="anim-data-expansion.js"></script>
+<script src="prices-data.js"></script>
+<script src="accounts-config.js"></script>
+<!-- The shop config slot (Tranche B): the RevenueCat public
+     keys land here at the payment sitting. Empty tonight on
+     purpose: with no keys the app says plainly that Pro is
+     not on sale in the store yet, and nothing can be bought. -->
+<script>window.FIT_SHOP_CONFIG = { revenueCatIosKey: "", revenueCatAndroidKey: "" };</script>
+<script src="demo-seed.js"></script>
+<script src="vendor/ical/ical.min.js"></script>
+<script src="calendar-import.js"></script>
+<script src="app.js"></script>
+<script type="module" src="auth.js"></script>
+</body>
+</html>
