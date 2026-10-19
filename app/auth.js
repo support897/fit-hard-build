@@ -50,7 +50,15 @@ function initDoor(config) {
 
 function watchUser(callback) {
   if (!auth) return function () {};
-  return onAuthStateChanged(auth, callback);
+  return onAuthStateChanged(auth, function (u) {
+    /* F1 (QA, build 5): the free month anchors to the AUTH
+       account's creation time — a fact that lives on the
+       account and can never re-stamp per device. */
+    try {
+      noteAuthAnchor(u && !u.isAnonymous && u.metadata ? u.metadata.creationTime : null);
+    } catch (e) {}
+    callback(u);
+  });
 }
 
 /* Door 1: email + a password the user chooses (the
@@ -58,15 +66,15 @@ function watchUser(callback) {
    app never stores it. A reset email covers the forgotten
    case, so nobody is locked out by a lost password. */
 async function signUpWithEmail(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password);
+  return withDoorTimeout(createUserWithEmailAndPassword(auth, email, password), 30000);
 }
 
 async function signInWithEmail(email, password) {
-  return signInWithEmailAndPassword(auth, email, password);
+  return withDoorTimeout(signInWithEmailAndPassword(auth, email, password), 30000);
 }
 
 async function resetPassword(email) {
-  return sendPasswordResetEmail(auth, email);
+  return withDoorTimeout(sendPasswordResetEmail(auth, email), 30000);
 }
 
 /* §5 door 2: Google. §5 door 3: Apple (parked on the Apple
@@ -114,16 +122,36 @@ async function nativeSignInWithApple(plugin) {
   return signInWithCredential(auth, provider.credential({ idToken: credential.idToken, rawNonce: credential.nonce }));
 }
 
+/* BOUNDED DOORS (fleet census, 19 Oct 2026): a native sheet
+   or popup promise that never settles must not hang the door
+   forever — every door promise races a clock, and a timeout
+   rejects with fit/door-timeout so the caller's catch speaks
+   the honest fail line and the user can tap again. The clock
+   only fires when the promise NEVER settles; a person
+   completing the sheet settles it first. */
+function withDoorTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        const e = new Error("The sign-in did not finish in time.");
+        e.code = "fit/door-timeout";
+        reject(e);
+      }, ms);
+    })
+  ]);
+}
+
 async function signInWithGoogle() {
   const plugin = nativeDoorPlugin();
-  if (plugin) return nativeSignInWithGoogle(plugin);
-  return signInWithPopup(auth, new GoogleAuthProvider());
+  if (plugin) return withDoorTimeout(nativeSignInWithGoogle(plugin), 60000);
+  return withDoorTimeout(signInWithPopup(auth, new GoogleAuthProvider()), 30000);
 }
 
 async function signInWithApple() {
   const plugin = nativeDoorPlugin();
-  if (plugin) return nativeSignInWithApple(plugin);
-  return signInWithPopup(auth, new OAuthProvider("apple.com"));
+  if (plugin) return withDoorTimeout(nativeSignInWithApple(plugin), 60000);
+  return withDoorTimeout(signInWithPopup(auth, new OAuthProvider("apple.com")), 30000);
 }
 
 async function signOutUser() {
@@ -302,10 +330,19 @@ let resolvedPlan = null;
    its arguments and the FREE_MONTH_DAYS constant. */
 const FREE_MONTH_DAYS = 30;
 let accountAgeStart = null;
+let authAnchorIso = null;
+function noteAuthAnchor(iso) {
+  /* The AUTH account's creation time, captured at the door.
+     When it exists it WINS over the profile stamp: a fresh
+     device can re-stamp the profile, it can never move the
+     account's creation time (QA finding F1, build 5). */
+  authAnchorIso = (typeof iso === "string" && iso) ? iso : null;
+}
 function setAccountAge(iso) {
   /* The app hands over the profile's account-age fact
      (firstSeenAt, stamped when the account was created and
-     carried forward on every repair, never dropped). */
+     carried forward on every repair, never dropped). It is
+     the fallback anchor only — the auth fact wins. */
   accountAgeStart = (typeof iso === "string" && iso) ? iso : null;
 }
 function resolveTier(compPlan, firstSeenAt, nowMs) {
@@ -323,7 +360,7 @@ function resolveTier(compPlan, firstSeenAt, nowMs) {
   return { plan: "free", reason: "free", daysLeft: 0 };
 }
 function entitlementDetail() {
-  return resolveTier(resolvedPlan, accountAgeStart, Date.now());
+  return resolveTier(resolvedPlan, authAnchorIso || accountAgeStart, Date.now());
 }
 /* TIER-MACHINE-END */
 function entitlement() {
@@ -346,7 +383,7 @@ function ensureDoor() {
 
 async function enterDemoSession() {
   ensureDoor();
-  const cred = await signInAnonymously(auth);
+  const cred = await withDoorTimeout(signInAnonymously(auth), 20000);
   return cred.user;
 }
 
