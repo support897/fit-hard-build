@@ -1,0 +1,135 @@
+name: iOS IPA (Fit Hard — native-door fix build)
+
+# Manual run only. Builds a signed App Store .ipa for Fit Hard on a cloud Mac
+# and uploads it to App Store Connect (TestFlight) via the ASC API key.
+# Build of record for this workflow: 1.1 build 4 — the QA remainder fixes
+# (GoogleService-Info.plist in the project, the real reversed-client-ID URL
+# scheme, the applesignin entitlement, the FirebaseAuthentication providers
+# config, the vendored Firebase SDK). Signing follows the Archive Signing
+# Law: the specifier lives in the CI-copy project (perl patch step, grep
+# proof), and the archive command itself carries NO signing overrides.
+#
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Stage the certified web bundle
+        working-directory: store-build
+        run: |
+          rm -rf www
+          mkdir www
+          cp -R ../app/. www/
+          # Store packaging rule: the certified bundle carries no privacy.html.
+          rm -f www/privacy.html
+          echo "Staged service worker: $(grep -o 'fitapp-v[0-9]*' www/service-worker.js | head -1)"
+          ls www | wc -l
+
+      - name: Install Capacitor and sync iOS
+        working-directory: store-build
+        run: |
+          npm install --no-audit --no-fund
+          npx cap sync ios
+
+      - name: Install signing material from secrets
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          CERT_PATH=$RUNNER_TEMP/distribution.p12
+          PROFILE_PATH=$RUNNER_TEMP/profile.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(uuidgen)
+          echo "$BUILD_CERTIFICATE_BASE64" | base64 -d > "$CERT_PATH"
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 -d > "$PROFILE_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/4db7458a-51dc-4f2f-b761-653bfc71c604.mobileprovision"
+
+      - name: Write ExportOptions
+        working-directory: store-build
+        run: |
+          cat > ExportOptions.plist <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>GZ9Z6BPTFR</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.ilseplacencia.fithard</key>
+              <string>Fit Hard App Store</string>
+            </dict>
+          </dict>
+          </plist>
+          PLIST
+
+      - name: Patch signing into the CI-copy project (Archive Signing Law)
+        working-directory: store-build
+        run: |
+          perl -pi -e 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;\n\t\t\t\tDEVELOPMENT_TEAM = GZ9Z6BPTFR;\n\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "Fit Hard App Store";/' ios/App/App.xcodeproj/project.pbxproj
+          perl -pi -e 's/CODE_SIGN_IDENTITY = "iPhone Developer";/CODE_SIGN_IDENTITY = "Apple Distribution";/' ios/App/App.xcodeproj/project.pbxproj
+          grep -E "CODE_SIGN_STYLE|DEVELOPMENT_TEAM|PROVISIONING_PROFILE_SPECIFIER" ios/App/App.xcodeproj/project.pbxproj | sort -u
+
+      - name: Archive (clean command — signing lives in the project)
+        working-directory: store-build
+        run: |
+          xcodebuild archive \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$RUNNER_TEMP/FitHard.xcarchive"
+
+      - name: Export IPA
+        working-directory: store-build
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/FitHard.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "$RUNNER_TEMP/export"
+          ls -la "$RUNNER_TEMP/export"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fit-hard-ios-ipa-1.1-b4
+          path: ${{ runner.temp }}/export/*.ipa
+          retention-days: 30
+      - name: Upload to App Store Connect
+        env:
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+          ASC_API_KEY_P8_B64: ${{ secrets.ASC_API_KEY_P8_B64 }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          echo -n "$ASC_API_KEY_P8_B64" | base64 --decode -o "$HOME/.appstoreconnect/private_keys/AuthKey_${ASC_API_KEY_ID}.p8"
+          set +e
+          xcrun altool --upload-app -f "$RUNNER_TEMP/export/App.ipa" -t ios --apiKey "$ASC_API_KEY_ID" --apiIssuer "$ASC_API_ISSUER_ID"
+          ALTOOL_STATUS=$?
+          set -e
+          echo "altool exit code: $ALTOOL_STATUS"
+          exit "$ALTOOL_STATUS"
