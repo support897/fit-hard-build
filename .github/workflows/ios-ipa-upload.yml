@@ -2,7 +2,7 @@ name: iOS IPA (Fit Hard — native-door fix build)
 
 # Manual run only. Builds a signed App Store .ipa for Fit Hard on a cloud Mac
 # and uploads it to App Store Connect (TestFlight) via the ASC API key.
-# Build of record for this workflow: 1.1 build 4 — the QA remainder fixes
+# Build of record for this workflow: 1.1 build 5 — the payments-enabling build
 # (GoogleService-Info.plist in the project, the real reversed-client-ID URL
 # scheme, the applesignin entitlement, the FirebaseAuthentication providers
 # config, the vendored Firebase SDK). Signing follows the Archive Signing
@@ -115,7 +115,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: fit-hard-ios-ipa-1.1-b4
+          name: fit-hard-ios-ipa-1.1-b5
           path: ${{ runner.temp }}/export/*.ipa
           retention-days: 30
       - name: Upload to App Store Connect
