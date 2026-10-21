@@ -358,7 +358,7 @@
   $("reofferSave").addEventListener("click", function () {
     var v = $("reofferName").value.trim().slice(0, 60);
     if (v) {
-      state.profile = state.profile || {};
+      ensureFullProfile();
       state.profile.name = v;
       save();
       renderAll();
@@ -371,7 +371,7 @@
   function iconFor(areaId) { return { peptides: "#i-pep", meals: "#i-meal", gym: "#i-gym", calendar: "#i-cal" }[areaId] || "#i-star"; }
 
   function buildSidebar() {
-    var needs = state.profile ? state.profile.needs : [];
+    var needs = (state.profile && state.profile.needs) || [];
     var split = L.areasForNeeds(needs.length ? needs : ["meals", "gym", "peptides", "calendar"]);
     function group(a) {
       var subs = a.subs.map(function (s) {
@@ -2124,8 +2124,40 @@
     return what === "sign-up" ? tr("acc.errMake")
                                : tr("acc.errSignin");
   }
+  /* D-B (door-feel ruling, 21 Oct 2026): while any door
+     attempt flies, the door LOOKS busy and a second tap is a
+     no-op — a door that looks dead during its own wait
+     invites the double tap that poisons the return. */
+  var doorBusy = false;
+  function doorBusyOn() { doorBusy = true; var b = $("accountBox"); if (b) b.classList.add("doorBusy"); }
+  function doorBusyOff() { doorBusy = false; var b = $("accountBox"); if (b) b.classList.remove("doorBusy"); }
+  /* D-A (same ruling): a cancel is not a failure — the user
+     changed their mind, so the door simply stands, silent.
+     Cancels arrive as the popup-closed code on the web, or
+     with "cancel" in the message in the native providers'
+     own words. */
+  function isDoorCancel(e) {
+    var code = (e && e.code) || "", msg = (e && e.message) || "";
+    return code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request" || /cancel/i.test(msg);
+  }
+  function doorAttempt(promise, failKey) {
+    if (doorBusy) return;
+    doorBusyOn();
+    promise.then(function () { /* the auth listener takes it from here */ }, function (e) {
+      doorBusyOff();
+      if (isDoorCancel(e)) return;
+      toast(tr(failKey));
+    });
+  }
   function renderAccount() {
     var box = $("accountBox"); if (!box) return;
+    doorBusy = false;
+    /* DOOR PURITY + ACCOUNT MANDATORY (fleet rulings, 21 Oct
+       2026): before entry the app shows the DOOR and nothing
+       else — the settings page carries sign-up/sign-in only,
+       the menu and Wally stay inside, and there is no road in
+       without an account. Entry (or the demo) lifts the class. */
+    document.body.classList.toggle("signedOut", !authUser && !demoMode);
     if (!doorStarted) {
       box.innerHTML = (Date.now() - bootAt < 4500) ?
         '<p class="hint">' + esc(tr("set.opening")) + '</p>' :
@@ -2160,8 +2192,10 @@
           '</div></div>';
         $("accChangeBtn").addEventListener("click", function () { doorStep = 1; renderAccount(); });
         $("accContinueBtn").addEventListener("click", function () {
+          if (doorBusy) return;
           var pw = $("accPass").value;
           if (!pw) { toast(tr("door.tPwFirst")); return; }
+          doorBusyOn();
           /* One button, both roads: sign in; a credential
              refusal may simply mean "new here", so offer
              the pair to account creation. An existing
@@ -2171,12 +2205,13 @@
           window.FitAuth.signInWithEmail(doorEmail, pw).catch(function (e) {
             var c = (e && e.code) || "";
             if (c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found") {
-              window.FitAuth.signUpWithEmail(doorEmail, pw).then(function () { toast(tr("door.tMade")); })
+              window.FitAuth.signUpWithEmail(doorEmail, pw).then(function () { doorBusyOff(); toast(tr("door.tMade")); })
                 .catch(function (e2) {
+                  doorBusyOff();
                   if (((e2 && e2.code) || "") === "auth/email-already-in-use") toast(tr("door.tMismatch"));
                   else toast(authErrWords(e2, "sign-up"));
                 });
-            } else { toast(authErrWords(e, "sign-in")); }
+            } else { doorBusyOff(); toast(authErrWords(e, "sign-in")); }
           });
         });
         $("accPass").addEventListener("keydown", function (ev) { if (ev.key === "Enter") $("accContinueBtn").click(); });
@@ -2202,7 +2237,7 @@
         '<button class="pillBtn" id="accReviewerBtn">' + esc(tr("door.reviewerBtn")) + '</button></div>' +
         (reviewerOpen ? '<div class="grid2"><label>' + esc(tr("door.codeLabel")) + '<input id="accCode" type="text" autocomplete="off" placeholder="' + esc(tr("door.codePh")) + '"></label></div>' +
           '<div class="row"><button class="pillBtn" id="accCodeBtn">' + esc(tr("door.codeBtn")) + '</button></div>' : "") +
-        '<div class="row doorGuestRow"><button class="miniBtn" id="accGuestBtn">' + esc(tr("door.guestBtn")) + '</button></div></div>';
+        '</div>';
       var emEl = $("accEmail"); if (emEl && doorEmail) emEl.value = doorEmail;
       function doorNext() {
         var em = $("accEmail").value.trim();
@@ -2213,13 +2248,12 @@
       $("accNextBtn").addEventListener("click", doorNext);
       $("accEmail").addEventListener("keydown", function (ev) { if (ev.key === "Enter") doorNext(); });
       $("accGoogleBtn").addEventListener("click", function () {
-        window.FitAuth.signInWithGoogle().catch(function () { toast(tr("acc.googleFail")); });
+        doorAttempt(window.FitAuth.signInWithGoogle(), "acc.googleFail");
       });
       $("accAppleBtn").addEventListener("click", function () {
-        window.FitAuth.signInWithApple().catch(function () { toast(tr("acc.appleFail")); });
+        doorAttempt(window.FitAuth.signInWithApple(), "acc.appleFail");
       });
       $("accDemoBtn").addEventListener("click", function () { enterDemo(null); });
-      $("accGuestBtn").addEventListener("click", function () { showView("today"); openSetup(); });
       $("accReviewerBtn").addEventListener("click", function () { reviewerOpen = true; renderAccount(); });
       var codeBtn = $("accCodeBtn");
       if (codeBtn) codeBtn.addEventListener("click", function () {
@@ -2292,9 +2326,12 @@
     });
   }
   function enterDemo(hash) {
+    if (doorBusy) return;
     if (!window.FitAuth || !window.FitAuth.enterDemoSession) { toast(tr("acc.demoResting")); return; }
+    doorBusyOn();
     demoPending = true; demoPendingHash = hash || null;
     window.FitAuth.enterDemoSession().catch(function () {
+      doorBusyOff();
       demoPending = false;
       toast(tr("acc.demoFail"));
     });
@@ -2352,11 +2389,29 @@
      user by it. A name typed at Create account wins first;
      a Google name is adopted when the profile has none.
      An existing profile name is never overwritten. */
+  /* BIRTH INTEGRITY (F-B11-1, QA's placed TypeError, 21 Oct
+     2026): a profile born thin — a name and nothing else —
+     poisons every render that reads its arrays (buildSidebar
+     read profile.needs unguarded and died, taking the birth
+     session's renders with it). Any site that creates the
+     profile creates it WHOLE: the four array fields always
+     stand. The free-month stamp keeps its own cured
+     machinery and is never minted here. */
+  function ensureFullProfile() {
+    var p = state.profile || {};
+    if (!Array.isArray(p.needs)) p.needs = [];
+    if (!Array.isArray(p.preferences)) p.preferences = [];
+    if (!Array.isArray(p.allergies)) p.allergies = [];
+    if (!Array.isArray(p.goals)) p.goals = [];
+    if (typeof p.name !== "string") p.name = "";
+    state.profile = p;
+    return p;
+  }
   function adoptSignInName(user) {
     var adopt = (pendingName || user.displayName || "").trim().slice(0, 60);
     pendingName = "";
     if (!adopt) return;
-    state.profile = state.profile || {};
+    ensureFullProfile();
     if (state.profile.name) return;
     state.profile.name = adopt;
     saveLocal();
@@ -2491,7 +2546,7 @@
            evening J3 friendly stop, which applied the
            name-SCREEN text to the tour.) */
         var v = inp.value.trim().slice(0, 60);
-        state.profile = state.profile || {};
+        ensureFullProfile();
         /* A typed name saves (on a replay, an edited
            name updates). A blank writes NOTHING — on
            replay it can never erase a saved name. */
@@ -2506,7 +2561,7 @@
       var inp = $("tourName");
       if (inp) {
         var v = inp.value.trim().slice(0, 60);
-        state.profile = state.profile || {};
+        ensureFullProfile();
         if (v && (tourReplay || !state.profile.name)) { state.profile.name = v; renderAll(); }
       }
     }

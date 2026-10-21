@@ -25,7 +25,7 @@
    (FitLogic.mergeStates), which never drops user data. */
 import { initializeApp } from "./sdk/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signOut, deleteUser,
+  getAuth, initializeAuth, browserLocalPersistence, onAuthStateChanged, signOut, deleteUser,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithCredential,
   signInAnonymously,
@@ -42,7 +42,21 @@ function initDoor(config) {
   if (!config) return false;
   if (!app) {
     app = initializeApp(config);
-    auth = getAuth(app);
+    /* THE DOOR CURE (the fleet bisect of record, as amended
+       to the proven control's settler, 21 Oct 2026): on
+       native, plain getAuth() leaves sign-in results and the
+       auth-state listener hanging in iPhone Capacitor apps —
+       the system sheet completes and the app never registers
+       it (her films, three apps). Native takes initializeAuth
+       naming browserLocalPersistence: the default chain
+       settles through IndexedDB, the layer that can stall
+       inside WKWebView under the packaged app's scheme;
+       browser-local persistence is the reliable settler in
+       that webview (the device-completing control's shape).
+       The web keeps getAuth. */
+    auth = (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform())
+      ? initializeAuth(app, { persistence: browserLocalPersistence })
+      : getAuth(app);
     db = getFirestore(app);
   }
   return true;
@@ -112,12 +126,20 @@ function nativeDoorPlugin() {
 async function nativeSignInWithGoogle(plugin) {
   const result = await plugin.signInWithGoogle();
   const credential = result.credential || {};
+  /* D-A (door-feel ruling, 21 Oct 2026): a return carrying
+     no token is NOT a credential — name it here instead of
+     feeding an undefined token into the exchange, where it
+     would surface as the wrong failure. A user cancel never
+     reaches this line: the plugin rejects it, and the door
+     reads a cancel as a cancel, silently. */
+  if (!credential.idToken) { const e = new Error("The sign-in did not finish."); e.code = "fit/door-unfinished"; throw e; }
   return signInWithCredential(auth, GoogleAuthProvider.credential(credential.idToken));
 }
 
 async function nativeSignInWithApple(plugin) {
   const result = await plugin.signInWithApple();
   const credential = result.credential || {};
+  if (!credential.idToken) { const e = new Error("The sign-in did not finish."); e.code = "fit/door-unfinished"; throw e; }
   const provider = new OAuthProvider("apple.com");
   return signInWithCredential(auth, provider.credential({ idToken: credential.idToken, rawNonce: credential.nonce }));
 }
