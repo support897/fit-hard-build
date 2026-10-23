@@ -1,4 +1,16 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v5 (2026-10-23) — v4 died EARLY at drive 5 (run
+# 39957787079, step-012): the EMAIL type raced on the cold door
+# (01 stands with the field focused, keyboard up, and EMPTY —
+# the focus race this lane first met on drive 1; the email leg
+# carried the settle beat but no landing proof). Death came one
+# step later at the "Your password" tap, the field existing
+# only past an advance the empty email never earned. v5 gives
+# all three email legs the fleet's proven shape (Meal Prep
+# v8): the typed address must STAND in the tree before anything
+# proceeds, with a conditional re-tap + retype recovery behind
+# the proof. The v4 full-node name waits stand untouched —
+# drive 5 never reached them.
 # Version: v4 (2026-10-23) — v3 FAILED-INSTRUMENT at drive 4 (run
 # 39953241647, step-019): THE ACCOUNT WAS CREATED AND THE TOUR
 # STOOD ASKING ITS NAME IN THE FAILURE FRAME ITSELF — and the
@@ -90,6 +102,42 @@ appId: com.ilseplacencia.fithard
     retryTapIfNoChange: true
 - waitForAnimationToEnd
 - inputText: "${TEST_EMAIL}"
+- extendedWaitUntil:
+    visible:
+      text: "${TEST_EMAIL}"
+    timeout: 15000
+- runFlow:
+    when:
+      notVisible: "${TEST_EMAIL}"
+    commands:
+      - tapOn:
+          text: "you@example.com"
+          waitUntilVisible: true
+          retryTapIfNoChange: true
+      - waitForAnimationToEnd
+      - inputText: "${TEST_EMAIL}"
+      - extendedWaitUntil:
+          visible:
+            text: "${TEST_EMAIL}"
+          timeout: 15000
+- extendedWaitUntil:
+    visible:
+      text: "${TEST_EMAIL}"
+    timeout: 15000
+- runFlow:
+    when:
+      notVisible: "${TEST_EMAIL}"
+    commands:
+      - tapOn:
+          text: "you@example.com"
+          waitUntilVisible: true
+          retryTapIfNoChange: true
+      - waitForAnimationToEnd
+      - inputText: "${TEST_EMAIL}"
+      - extendedWaitUntil:
+          visible:
+            text: "${TEST_EMAIL}"
+          timeout: 15000
 - tapOn:
     point: "90%, 62%"
 - takeScreenshot: 01-email-step
@@ -315,6 +363,24 @@ appId: com.ilseplacencia.fithard
     text: "you@example.com"
     waitUntilVisible: true
 - inputText: "${TEST_EMAIL2}"
+- extendedWaitUntil:
+    visible:
+      text: "${TEST_EMAIL2}"
+    timeout: 15000
+- runFlow:
+    when:
+      notVisible: "${TEST_EMAIL2}"
+    commands:
+      - tapOn:
+          text: "you@example.com"
+          waitUntilVisible: true
+          retryTapIfNoChange: true
+      - waitForAnimationToEnd
+      - inputText: "${TEST_EMAIL2}"
+      - extendedWaitUntil:
+          visible:
+            text: "${TEST_EMAIL2}"
+          timeout: 15000
 - tapOn:
     point: "90%, 62%"
 - tapOn:
