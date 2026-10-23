@@ -371,6 +371,26 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Sign out"
     waitUntilVisible: true
+# DRIVE 16 (run 40000514026) died at this door wait, step-077:
+# v15 landed whole (12-settings-account stands) and the shipped
+# handler is one line (accOutBtn -> signOut(auth) -> toast; read
+# in the packaged app.js, pin 16bd6373), yet at the wait's end
+# the app still stood signed in, the button enabled in the
+# tree. The click never took effect — the account box re-renders
+# on sync state, and the sync line ("Your last change could not
+# reach your account yet") stood through the whole leg, giving
+# the re-render engine its fuel. Cure: one conditional retry
+# keyed on the "Sign out" node itself — it stands only while
+# signed in, so after a landed sign-out the retry stands down
+# on the door. The door wait below stays the judge.
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Sign out"
+    commands:
+      - tapOn:
+          text: "Sign out"
+          waitUntilVisible: true
 - extendedWaitUntil:
     visible:
       text: "Sign in or make your account"
@@ -482,6 +502,26 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Sign out"
     waitUntilVisible: true
+# DRIVE 16 (run 40000514026) died at this door wait, step-077:
+# v15 landed whole (12-settings-account stands) and the shipped
+# handler is one line (accOutBtn -> signOut(auth) -> toast; read
+# in the packaged app.js, pin 16bd6373), yet at the wait's end
+# the app still stood signed in, the button enabled in the
+# tree. The click never took effect — the account box re-renders
+# on sync state, and the sync line ("Your last change could not
+# reach your account yet") stood through the whole leg, giving
+# the re-render engine its fuel. Cure: one conditional retry
+# keyed on the "Sign out" node itself — it stands only while
+# signed in, so after a landed sign-out the retry stands down
+# on the door. The door wait below stays the judge.
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Sign out"
+    commands:
+      - tapOn:
+          text: "Sign out"
+          waitUntilVisible: true
 - extendedWaitUntil:
     visible:
       text: "Sign in or make your account"
