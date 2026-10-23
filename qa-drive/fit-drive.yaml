@@ -272,6 +272,21 @@ appId: com.ilseplacencia.fithard
 - assertVisible:
     text: "Hi, Sim Driver Fit"
 - takeScreenshot: 08-greeting
+# Drive 12 (run 39983559412): the sidebar NEVER closed — the
+# "Today" tap navigated behind it, the greeting assert passed on
+# the header node (visible either way), and the feeling card
+# stood squeezed into the sliver at x 393-454 with its buttons
+# outside the tappable band; the "Great" tap had nothing to hit.
+# Conditional close on the sliver's own node (the tree names it
+# "Close the side menu") — the Pace v16 / NeedsMe v11 shape.
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
 - tapOn:
     text: "Great"
     waitUntilVisible: true
