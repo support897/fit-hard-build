@@ -120,6 +120,7 @@ jobs:
           TEST_EMAIL2: "placenciailse.qa.fit2@gmail.com"
           TEST_PASSWORD2: ${{ secrets.QA_FIT_TEST_PASSWORD2 }}
           MAESTRO_DRIVER_START_TIMEOUT: "180"
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: "600000"
         run: |
           maestro test \
             -e TEST_EMAIL="$TEST_EMAIL" \
