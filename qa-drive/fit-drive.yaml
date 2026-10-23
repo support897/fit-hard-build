@@ -1,4 +1,17 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v6 (2026-10-23) — v5's proof CAUGHT the race on
+# drive 6 (run 39959392784, step-009) and the flow died on
+# the catch: the failure frame shows the door pristine, the
+# email field holding only its placeholder — the type raced
+# a third time — and my v5 order was judge → recovery →
+# judge: a FATAL wait stands BEFORE the recovery, so the
+# recovery can never run when the first type fails. The flaw
+# is mine, and it is fleet-visible: Meal Prep v8/v9 carries
+# the same order on its email legs (its proof simply never
+# failed there). v6 removes the lead fatal proof on both of
+# Fit's recovery-carrying legs: type → conditional recovery →
+# judge → conditional recovery → advance. LAW BANNED FROM
+# HERE: a recovery never stands behind a fatal wait.
 # Version: v5 (2026-10-23) — v4 died EARLY at drive 5 (run
 # 39957787079, step-012): the EMAIL type raced on the cold door
 # (01 stands with the field focused, keyboard up, and EMPTY —
@@ -102,10 +115,6 @@ appId: com.ilseplacencia.fithard
     retryTapIfNoChange: true
 - waitForAnimationToEnd
 - inputText: "${TEST_EMAIL}"
-- extendedWaitUntil:
-    visible:
-      text: "${TEST_EMAIL}"
-    timeout: 15000
 - runFlow:
     when:
       notVisible: "${TEST_EMAIL}"
@@ -363,10 +372,6 @@ appId: com.ilseplacencia.fithard
     text: "you@example.com"
     waitUntilVisible: true
 - inputText: "${TEST_EMAIL2}"
-- extendedWaitUntil:
-    visible:
-      text: "${TEST_EMAIL2}"
-    timeout: 15000
 - runFlow:
     when:
       notVisible: "${TEST_EMAIL2}"
