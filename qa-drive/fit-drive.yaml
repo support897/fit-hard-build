@@ -248,8 +248,12 @@ appId: com.ilseplacencia.fithard
           waitUntilVisible: true
       - inputText: "30"
       - tapOn:
-          point: "90%, 62%"
+          point: "90%, 59%"
       - takeScreenshot: 06-setup-filled
+      - swipe:
+          direction: UP
+      - swipe:
+          direction: UP
       - tapOn:
           text: "Start my app"
           waitUntilVisible: true
@@ -461,7 +465,11 @@ appId: com.ilseplacencia.fithard
           waitUntilVisible: true
       - inputText: "30"
       - tapOn:
-          point: "90%, 62%"
+          point: "90%, 59%"
+      - swipe:
+          direction: UP
+      - swipe:
+          direction: UP
       - tapOn:
           text: "Start my app"
           waitUntilVisible: true
