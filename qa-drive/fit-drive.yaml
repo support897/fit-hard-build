@@ -1,4 +1,14 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v8 (2026-10-24) — v7's "Next →" cure LANDED WHOLE
+# on drive 8 (run 39967025259): the tour walked out to its
+# last card — "That's the tour. Your app is yours now." —
+# and DRIVE 7'S OPEN QUESTION IS ANSWERED: the name SAVED
+# (the header and Wally's card both read "Hi, Sim Driver
+# Fit"). Death at step-035, the tour's finish tap:
+# FULL-NODE's seventh conviction — the button's node is
+# "Done ✓", tick included (read from the step-035 hierarchy
+# itself), and the flow tapped the fragment "Done". v8
+# completes both tour finish taps to "Done ✓".
 # Version: v7 (2026-10-24) — v6's RECOVERY LANDED WHOLE on
 # drive 7 (run 39963956968): the address stood, the password
 # landed, the submit fired, and Wally's card was finally
@@ -206,7 +216,7 @@ appId: com.ilseplacencia.fithard
     text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Done"
+    text: "Done ✓"
     waitUntilVisible: true
 - extendedWaitUntil:
     notVisible:
@@ -432,7 +442,7 @@ appId: com.ilseplacencia.fithard
     text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Done"
+    text: "Done ✓"
     waitUntilVisible: true
 - runFlow:
     when:
