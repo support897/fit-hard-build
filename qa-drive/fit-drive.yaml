@@ -1,4 +1,25 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v3 (2026-10-23) — v2 FAILED-INSTRUMENT at drive 3 (run
+# 39948998502, step-020, the tour name-step wait): the furthest
+# this lane has travelled. The type LANDS on this door now (02:
+# 20 bullets standing, the bar dismissed, Continue clear) — then
+# the bar RE-STOOD over the button before the submit tap, the
+# tap was absorbed (BAR-OVER-SUBMIT, second door), and the
+# door-gone wait FALSE-PASSED: the keyboard had scrolled the
+# card so the door line's node left the rendered tree (scroll-
+# unrender — a notVisible wait cannot tell hidden from
+# unrendered). The name wait then failed fairly on the standing
+# card. v3 cures: (1) the three password dismissals take the
+# MEASURED tick point (90%, 59%) — the tick's centre read off
+# drive 3's own frame, matching NeedsMe's independent measure;
+# (2) every Continue gains retryTapIfNoChange, so a re-stood
+# bar costs one absorbed tap, not the drive; (3) the three
+# notVisible door-gone waits are DELETED — the following
+# asserts carry the proof honestly. The visible waits on the
+# door line (cold open + sign-out proofs) stand: 00-door proves
+# the line in pixels on this surface. The five remaining
+# (90%, 62%) taps are email-leg and sheet-leg dismissals,
+# proven or keyboard-proven, untouched. v2: 12,343 B.
 # Version: v2 (2026-10-23) — v1 FAILED-INSTRUMENT at drive 1 (run
 # 39942569202, step-011): the email inputText never landed — the
 # frames show the door's field EMPTY with NO keyboard standing (the
@@ -71,15 +92,12 @@ appId: com.ilseplacencia.fithard
 - waitForAnimationToEnd
 - inputText: "${TEST_PASSWORD}"
 - tapOn:
-    point: "90%, 62%"
+    point: "90%, 59%"
 - takeScreenshot: 02-password-step
 - tapOn:
     text: "Continue"
     waitUntilVisible: true
-- extendedWaitUntil:
-    notVisible:
-      text: "Sign in or make your account"
-    timeout: 90000
+    retryTapIfNoChange: true
 - takeScreenshot: 03-inside
 # ---------- first entry: the mascot tour asks the name -------------
 # The tour's name step is the profile name's birth (the v4 shape);
@@ -96,7 +114,7 @@ appId: com.ilseplacencia.fithard
 - waitForAnimationToEnd
 - inputText: "Sim Driver Fit"
 - tapOn:
-    point: "90%, 62%"
+    point: "90%, 59%"
 - takeScreenshot: 04-tour-name
 - tapOn:
     text: "Next"
@@ -222,14 +240,11 @@ appId: com.ilseplacencia.fithard
     waitUntilVisible: true
 - inputText: "${TEST_PASSWORD}"
 - tapOn:
-    point: "90%, 62%"
+    point: "90%, 59%"
 - tapOn:
     text: "Continue"
     waitUntilVisible: true
-- extendedWaitUntil:
-    notVisible:
-      text: "Sign in or make your account"
-    timeout: 90000
+    retryTapIfNoChange: true
 # The tour state is saved with the account, so no tour is expected;
 # it is still handled if it stands.
 - runFlow:
@@ -298,14 +313,11 @@ appId: com.ilseplacencia.fithard
     waitUntilVisible: true
 - inputText: "${TEST_PASSWORD2}"
 - tapOn:
-    point: "90%, 62%"
+    point: "90%, 59%"
 - tapOn:
     text: "Continue"
     waitUntilVisible: true
-- extendedWaitUntil:
-    notVisible:
-      text: "Sign in or make your account"
-    timeout: 90000
+    retryTapIfNoChange: true
 - extendedWaitUntil:
     visible:
       text: "What's your name?"
@@ -315,7 +327,7 @@ appId: com.ilseplacencia.fithard
     waitUntilVisible: true
 - inputText: "Second Driver Fit"
 - tapOn:
-    point: "90%, 62%"
+    point: "90%, 59%"
 - tapOn:
     text: "Next"
     waitUntilVisible: true
