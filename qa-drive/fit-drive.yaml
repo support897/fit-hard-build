@@ -393,14 +393,32 @@ appId: com.ilseplacencia.fithard
 # keyed on the "Sign out" node itself — it stands only while
 # signed in, so after a landed sign-out the retry stands down
 # on the door. The door wait below stays the judge.
+# DRIVE 18 (run 40008108425) died at the same wait, step-085,
+# WITH the retry standing: the packaged code carries NO disable
+# or dim path for the button (grep-proven in the same app.js),
+# the tree reads it enabled, and node-resolved taps keep dying
+# against the re-rendering box. v18: the retries tap a POINT
+# inside the button's own measured bounds — [35,374][134,414]
+# on drive 18, [35,391][134,432] on drive 16; (21%, 46%) stands
+# inside both — a point cannot be resolved against a stale
+# node generation, and a second guard keyed on the box's own
+# heading ("Your account", standing only while signed in)
+# fires the same point last.
 - waitForAnimationToEnd
 - runFlow:
     when:
       visible: "Sign out"
     commands:
       - tapOn:
-          text: "Sign out"
-          waitUntilVisible: true
+          point: "21%, 46%"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Your account"
+    commands:
+      - tapOn:
+          point: "21%, 46%"
+      - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
       text: "Sign in or make your account"
@@ -524,14 +542,32 @@ appId: com.ilseplacencia.fithard
 # keyed on the "Sign out" node itself — it stands only while
 # signed in, so after a landed sign-out the retry stands down
 # on the door. The door wait below stays the judge.
+# DRIVE 18 (run 40008108425) died at the same wait, step-085,
+# WITH the retry standing: the packaged code carries NO disable
+# or dim path for the button (grep-proven in the same app.js),
+# the tree reads it enabled, and node-resolved taps keep dying
+# against the re-rendering box. v18: the retries tap a POINT
+# inside the button's own measured bounds — [35,374][134,414]
+# on drive 18, [35,391][134,432] on drive 16; (21%, 46%) stands
+# inside both — a point cannot be resolved against a stale
+# node generation, and a second guard keyed on the box's own
+# heading ("Your account", standing only while signed in)
+# fires the same point last.
 - waitForAnimationToEnd
 - runFlow:
     when:
       visible: "Sign out"
     commands:
       - tapOn:
-          text: "Sign out"
-          waitUntilVisible: true
+          point: "21%, 46%"
+      - waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Your account"
+    commands:
+      - tapOn:
+          point: "21%, 46%"
+      - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
       text: "Sign in or make your account"
