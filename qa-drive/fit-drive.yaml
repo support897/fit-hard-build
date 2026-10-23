@@ -1,4 +1,16 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v4 (2026-10-23) — v3 FAILED-INSTRUMENT at drive 4 (run
+# 39953241647, step-019): THE ACCOUNT WAS CREATED AND THE TOUR
+# STOOD ASKING ITS NAME IN THE FAILURE FRAME ITSELF — and the
+# 60 s wait for "What's your name?" still failed, because the
+# tree node reads "Hey! I'm Wally. Welcome in! What's your
+# name?" and this lane's matching is FULL-NODE: a fragment of a
+# composed heading never matches (class banked from this
+# drive's own hierarchy: text exact, bounds on screen, enabled
+# true). v4 carries the complete heading at all three name-ask
+# selectors; the same completion was applied fleet-wide the
+# same hour (Pip, Rue, Skip headings — each sourced from its
+# own app's tree). v3's cures stand untouched. v3: 13,423 B.
 # Version: v3 (2026-10-23) — v2 FAILED-INSTRUMENT at drive 3 (run
 # 39948998502, step-020, the tour name-step wait): the furthest
 # this lane has travelled. The type LANDS on this door now (02:
@@ -105,7 +117,7 @@ appId: com.ilseplacencia.fithard
 # exactly as the b11/b12 libs walked it (Next until Done stands).
 - extendedWaitUntil:
     visible:
-      text: "What's your name?"
+      text: "Hey! I'm Wally. Welcome in! What's your name?"
     timeout: 60000
 - tapOn:
     text: "Your name"
@@ -130,7 +142,7 @@ appId: com.ilseplacencia.fithard
     waitUntilVisible: true
 - extendedWaitUntil:
     notVisible:
-      text: "What's your name?"
+      text: "Hey! I'm Wally. Welcome in! What's your name?"
     timeout: 30000
 - takeScreenshot: 05-tour-done
 # ---------- the setup sheet, completed if it stands ----------------
@@ -320,7 +332,7 @@ appId: com.ilseplacencia.fithard
     retryTapIfNoChange: true
 - extendedWaitUntil:
     visible:
-      text: "What's your name?"
+      text: "Hey! I'm Wally. Welcome in! What's your name?"
     timeout: 60000
 - tapOn:
     text: "Your name"
