@@ -1,4 +1,17 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v2 (2026-10-23) — v1 FAILED-INSTRUMENT at drive 1 (run
+# 39942569202, step-011): the email inputText never landed — the
+# frames show the door's field EMPTY with NO keyboard standing (the
+# field tap raced the Settings sheet's settle; hideKeyboard passed
+# as a no-op, the arrow tap went nowhere on an empty field, and the
+# "Your password" tap died). v2 cures: (a) the fleet hideKeyboard
+# class — every bare hideKeyboard replaced by the accessory-bar
+# Done tap (90%, 62%); this drive REFINES the class record:
+# hideKeyboard fails only when a keyboard actually stands; with
+# none it silently no-ops, which is why the failure surfaced one
+# step later here. (b) the focus race: waitForAnimationToEnd after
+# each door field tap + retryTapIfNoChange on the field taps and
+# the arrow tap. v1: 11,093 B / 106 commands.
 # The FINISHING ORDER spine for candidate 12's simulator copy
 # (bundle com.ilseplacencia.fithard, version 1.1, build 12, SW
 # fitapp-v86; the copy's byte-leg pins stand in
@@ -41,17 +54,24 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "you@example.com"
     waitUntilVisible: true
+    retryTapIfNoChange: true
+- waitForAnimationToEnd
 - inputText: "${TEST_EMAIL}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - takeScreenshot: 01-email-step
 - tapOn:
     text: "Next"
     waitUntilVisible: true
+    retryTapIfNoChange: true
 - tapOn:
     text: "Your password"
     waitUntilVisible: true
+    retryTapIfNoChange: true
+- waitForAnimationToEnd
 - inputText: "${TEST_PASSWORD}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - takeScreenshot: 02-password-step
 - tapOn:
     text: "Continue"
@@ -72,8 +92,11 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Your name"
     waitUntilVisible: true
+    retryTapIfNoChange: true
+- waitForAnimationToEnd
 - inputText: "Sim Driver Fit"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - takeScreenshot: 04-tour-name
 - tapOn:
     text: "Next"
@@ -116,7 +139,8 @@ appId: com.ilseplacencia.fithard
           text: "34"
           waitUntilVisible: true
       - inputText: "30"
-      - hideKeyboard
+      - tapOn:
+          point: "90%, 62%"
       - takeScreenshot: 06-setup-filled
       - tapOn:
           text: "Start my app"
@@ -185,8 +209,11 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "you@example.com"
     waitUntilVisible: true
+    retryTapIfNoChange: true
+- waitForAnimationToEnd
 - inputText: "${TEST_EMAIL}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - tapOn:
     text: "Next"
     waitUntilVisible: true
@@ -194,7 +221,8 @@ appId: com.ilseplacencia.fithard
     text: "Your password"
     waitUntilVisible: true
 - inputText: "${TEST_PASSWORD}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - tapOn:
     text: "Continue"
     waitUntilVisible: true
@@ -260,7 +288,8 @@ appId: com.ilseplacencia.fithard
     text: "you@example.com"
     waitUntilVisible: true
 - inputText: "${TEST_EMAIL2}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - tapOn:
     text: "Next"
     waitUntilVisible: true
@@ -268,7 +297,8 @@ appId: com.ilseplacencia.fithard
     text: "Your password"
     waitUntilVisible: true
 - inputText: "${TEST_PASSWORD2}"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - tapOn:
     text: "Continue"
     waitUntilVisible: true
@@ -284,7 +314,8 @@ appId: com.ilseplacencia.fithard
     text: "Your name"
     waitUntilVisible: true
 - inputText: "Second Driver Fit"
-- hideKeyboard
+- tapOn:
+    point: "90%, 62%"
 - tapOn:
     text: "Next"
     waitUntilVisible: true
@@ -313,7 +344,8 @@ appId: com.ilseplacencia.fithard
           text: "34"
           waitUntilVisible: true
       - inputText: "30"
-      - hideKeyboard
+      - tapOn:
+          point: "90%, 62%"
       - tapOn:
           text: "Start my app"
           waitUntilVisible: true
