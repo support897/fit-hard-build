@@ -136,6 +136,14 @@ appId: com.ilseplacencia.fithard
     retryTapIfNoChange: true
 - waitForAnimationToEnd
 - inputText: "${TEST_EMAIL}"
+# DRIVE 17 (run 40004914338) died at the landing judge below,
+# step-013: the field held "e.qa.fit@placenciailse.qa.fit@
+# gmail.com" — the proof polled WHILE the first type was still
+# streaming in, read a partial string, and the retype APPENDED
+# the whole address after the fragment. RETYPE-WITHOUT-CLEAR.
+# Every retype in this flow now ERASES first (eraseText 60 on
+# the refocused field): a spurious poll can no longer poison
+# the field, and a truly empty field is unaffected.
 - runFlow:
     when:
       notVisible: "${TEST_EMAIL}"
@@ -145,6 +153,7 @@ appId: com.ilseplacencia.fithard
           waitUntilVisible: true
           retryTapIfNoChange: true
       - waitForAnimationToEnd
+      - eraseText: 60
       - inputText: "${TEST_EMAIL}"
       - extendedWaitUntil:
           visible:
@@ -163,6 +172,7 @@ appId: com.ilseplacencia.fithard
           waitUntilVisible: true
           retryTapIfNoChange: true
       - waitForAnimationToEnd
+      - eraseText: 60
       - inputText: "${TEST_EMAIL}"
       - extendedWaitUntil:
           visible:
@@ -541,6 +551,7 @@ appId: com.ilseplacencia.fithard
           waitUntilVisible: true
           retryTapIfNoChange: true
       - waitForAnimationToEnd
+      - eraseText: 60
       - inputText: "${TEST_EMAIL2}"
       - extendedWaitUntil:
           visible:
