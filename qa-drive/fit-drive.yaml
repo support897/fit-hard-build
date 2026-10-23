@@ -1,4 +1,15 @@
 # Fit Hard 12 simulator drive — QA Tester chair.
+# Version: v7 (2026-10-24) — v6's RECOVERY LANDED WHOLE on
+# drive 7 (run 39963956968): the address stood, the password
+# landed, the submit fired, and Wally's card was finally
+# JUDGED BY ITS FULL HEADING — and passed; "Sim Driver Fit"
+# stands typed in the card's field in frame 04. Death at
+# step-032, the tour's advance: FULL-NODE's sixth conviction —
+# the button's node is "Next →", arrow included (bounds
+# [242,473][333,517] in the failure hierarchy), and the flow
+# tapped the fragment "Next". The door's own advance is a
+# different control whose node IS plain "Next" (its taps
+# fired all night); only the six tour advances change.
 # Version: v6 (2026-10-23) — v5's proof CAUGHT the race on
 # drive 6 (run 39959392784, step-009) and the flow died on
 # the catch: the failure frame shows the door pristine, the
@@ -186,13 +197,13 @@ appId: com.ilseplacencia.fithard
     point: "90%, 59%"
 - takeScreenshot: 04-tour-name
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
     text: "Done"
@@ -412,13 +423,13 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     point: "90%, 59%"
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
-    text: "Next"
+    text: "Next →"
     waitUntilVisible: true
 - tapOn:
     text: "Done"
