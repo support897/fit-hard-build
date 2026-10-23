@@ -270,7 +270,7 @@ appId: com.ilseplacencia.fithard
     text: "Today"
     waitUntilVisible: true
 - assertVisible:
-    text: "Sim Driver Fit"
+    text: "Hi, Sim Driver Fit"
 - takeScreenshot: 08-greeting
 - tapOn:
     text: "Great"
@@ -356,7 +356,7 @@ appId: com.ilseplacencia.fithard
     waitUntilVisible: true
 # The sentinel stands: the greeting carries the account's own name.
 - assertVisible:
-    text: "Sim Driver Fit"
+    text: "Hi, Sim Driver Fit"
 - takeScreenshot: 15-relogin-greeting
 - tapOn:
     text: "Hide or show the side menu"
@@ -486,9 +486,9 @@ appId: com.ilseplacencia.fithard
 # Isolation, name side: this space greets its own name, and the
 # first account's sentinel never renders here.
 - assertVisible:
-    text: "Second Driver Fit"
+    text: "Hi, Second Driver Fit"
 - assertNotVisible:
-    text: "Sim Driver Fit"
+    text: "Hi, Sim Driver Fit"
 - takeScreenshot: 19-isolation-greeting
 - tapOn:
     text: "Hide or show the side menu"
