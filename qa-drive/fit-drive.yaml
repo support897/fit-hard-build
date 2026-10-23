@@ -332,9 +332,16 @@ appId: com.ilseplacencia.fithard
 # ---------- stage (iii): sign out through the app's own control ----
 - tapOn:
     text: "Hide or show the side menu"
+# DRIVE 14 (run 39991653261) died at this "Sign out" wait,
+# step-074: the Settings tap never landed. The failure
+# hierarchy measures why — the sidebar's "Settings" node
+# spans [12,818][345,870]pt, its centre at 96.6% of the
+# screen height, inside the bottom gesture zone where a
+# centre tap is absorbed. The week had PLANNED (11 stands);
+# the journey was complete. Cure: tap the node by a point
+# inside its own bounds, above the deepest edge — (30%, 95%).
 - tapOn:
-    text: "Settings"
-    waitUntilVisible: true
+    point: "30%, 95%"
 - extendedWaitUntil:
     visible:
       text: "Sign out"
@@ -416,9 +423,16 @@ appId: com.ilseplacencia.fithard
 # ---------- sign out again ------------------------------------------
 - tapOn:
     text: "Hide or show the side menu"
+# DRIVE 14 (run 39991653261) died at this "Sign out" wait,
+# step-074: the Settings tap never landed. The failure
+# hierarchy measures why — the sidebar's "Settings" node
+# spans [12,818][345,870]pt, its centre at 96.6% of the
+# screen height, inside the bottom gesture zone where a
+# centre tap is absorbed. The week had PLANNED (11 stands);
+# the journey was complete. Cure: tap the node by a point
+# inside its own bounds, above the deepest edge — (30%, 95%).
 - tapOn:
-    text: "Settings"
-    waitUntilVisible: true
+    point: "30%, 95%"
 - extendedWaitUntil:
     visible:
       text: "Sign out"
