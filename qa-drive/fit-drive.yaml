@@ -342,6 +342,27 @@ appId: com.ilseplacencia.fithard
 # inside its own bounds, above the deepest edge — (30%, 95%).
 - tapOn:
     point: "30%, 95%"
+# DRIVE 15 (run 39995899331) died at this same wait, step-070:
+# the point tap LANDED (Settings highlighted, the page rendered
+# behind the sidebar) but the sidebar never closed, and no
+# "Sign out" node stood in the tree at all — the Settings page
+# squeezed behind the open sidebar never lays out its lower
+# sections. Cure, two parts: the v13 conditional sidebar close
+# (verbatim), then named-node travel to "Sign out" as
+# TRANSPORT (the MP v19 law); the wait below stays the judge.
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Sign out"
+    direction: DOWN
+    timeout: 60000
 - extendedWaitUntil:
     visible:
       text: "Sign out"
@@ -433,6 +454,27 @@ appId: com.ilseplacencia.fithard
 # inside its own bounds, above the deepest edge — (30%, 95%).
 - tapOn:
     point: "30%, 95%"
+# DRIVE 15 (run 39995899331) died at this same wait, step-070:
+# the point tap LANDED (Settings highlighted, the page rendered
+# behind the sidebar) but the sidebar never closed, and no
+# "Sign out" node stood in the tree at all — the Settings page
+# squeezed behind the open sidebar never lays out its lower
+# sections. Cure, two parts: the v13 conditional sidebar close
+# (verbatim), then named-node travel to "Sign out" as
+# TRANSPORT (the MP v19 law); the wait below stays the judge.
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
+- scrollUntilVisible:
+    element:
+      text: "Sign out"
+    direction: DOWN
+    timeout: 60000
 - extendedWaitUntil:
     visible:
       text: "Sign out"
