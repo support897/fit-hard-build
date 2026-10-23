@@ -300,9 +300,25 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Meal plan"
     waitUntilVisible: true
+# Drive 13 (run 39987559107): the "Meals" tap EXPANDS the group,
+# "Meal plan" navigates behind the still-open sidebar, and the
+# asserted empty line — real copy in the shipped i18n — does not
+# stand in that squeezed tree at all. The sidebar closes first
+# (v12's conditional), and the page is judged by what the drive's
+# own hierarchy PROVES stands on it: the "Plan my week" button,
+# the very control tapped next. The fill after that tap is this
+# leg's proof (the planned line, judged on the return leg).
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
 - extendedWaitUntil:
     visible:
-      text: "No meals planned yet."
+      text: "Plan my week"
     timeout: 60000
 - takeScreenshot: 10-plan-empty
 - tapOn:
@@ -381,6 +397,14 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Meal plan"
     waitUntilVisible: true
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
 # The plan stands: the planned line renders, the empty state never.
 - extendedWaitUntil:
     visible:
@@ -513,11 +537,19 @@ appId: com.ilseplacencia.fithard
 - tapOn:
     text: "Meal plan"
     waitUntilVisible: true
+- runFlow:
+    when:
+      visible: "Close the side menu"
+    commands:
+      - tapOn:
+          text: "Close the side menu"
+          waitUntilVisible: true
+      - waitForAnimationToEnd
 # Isolation, plan side: this account's plan is its own — empty,
 # fill offered; the first account's planned line never renders.
 - extendedWaitUntil:
     visible:
-      text: "No meals planned yet."
+      text: "Plan my week"
     timeout: 60000
 - assertNotVisible:
     text: "Your week is planned. Tap any meal for the recipe."
